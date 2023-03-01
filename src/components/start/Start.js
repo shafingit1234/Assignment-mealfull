@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import "./Start.scss";
 import { updateMap } from "../../redux/slices/operationOnDataSlice";
@@ -7,10 +7,10 @@ import TableOrig from "../TableOrig/TableOrig";
 // import "./../scheduled-date-timing.json"
 function Start() {
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    fetchData();
-  }, []);
+  // let orig_mp = new Map();
+  // let orig_data = "";
+  const [orig_mp, setOrig_mp] = useState("");
+  const [orig_data, setData] = useState("");
   const findTimeRange = (tm) => {
     let hr = tm.indexOf(":");
     let int_hr = parseInt(tm.substring(0, hr));
@@ -28,7 +28,6 @@ function Start() {
       return "6-9";
     }
   };
-
   const findCleanData = (data) => {
     let mp = new Map();
     let test = "";
@@ -115,15 +114,22 @@ function Start() {
       },
     });
     const data = await response.json();
-    // const data_time = JSON.stringify(data[0].schedule_time).split(" ")[1];
-    dispatch(getData(data));
-    dispatch(updateMap(findCleanData(data)));
+    setOrig_mp(findCleanData(data));
+    setData(data);
+    console.log(orig_mp);
+    console.log(orig_data);
+    console.log(orig_data[0]);
     return;
   }
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   return (
     <div>
-      <TableOrig />
+      {/* I will need to pass orig_mp as prop to tableOrig. */}
+      Start
+      {/* <TableOrig /> */}
     </div>
   );
 }
