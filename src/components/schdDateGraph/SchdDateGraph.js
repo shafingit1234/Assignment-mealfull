@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Bar } from "react-chartjs-2";
 import { useSelector } from "react-redux";
 import "chart.js/auto";
@@ -6,12 +6,11 @@ function SchdDateGraph() {
   const schd_list = useSelector(
     (state) => state.operationOnDataReducer.schd_list
   );
-  const [objt, setObjt] = useState(null);
-  const random = () => Math.floor(Math.random() * 255);
+
   const createGraph = () => {
     //first create schd_date as labels id by id
     //then set count as your data.
-    console.log(schd_list);
+    // console.log(schd_list);
     let obj = {
       labels: [],
       datasets: [],
@@ -32,7 +31,7 @@ function SchdDateGraph() {
       //   obj2.borderWidth.push("acqua");
     }
     obj.datasets.push(obj2);
-    console.log("This is an object ", obj);
+    // console.log("This is an object ", obj);
     // setObjt(obj);
     return (
       <>

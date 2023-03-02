@@ -7,15 +7,18 @@ import {
   fetchSchedulePair,
   fetchTimePair,
 } from "../../redux/slices/operationOnDataSlice";
-import { useNavigate } from "react-router-dom";
-
+// import Autocomplete, { createFilterOptions, TextField } from "@mui/material";
+import TableSchdDate from "../TableSchdDate/TableSchdDate";
+import { FormSelect } from "react-bootstrap";
+// const filter = createFilterOptions();
 function New_start() {
   const [data, setData] = useState([]);
   const [col, setCol] = useState([]);
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState(`"2021-05-19"`);
   const [data_map, setMp] = useState("");
+  const [tableVis, setTableVis] = useState(true);
+  const [item_date_list, setItemDateList] = useState([]);
   const dispatch = useDispatch("");
-  const navigate = useNavigate();
   const thData = () => {
     return col.map((d) => {
       return <th key={d}>{d}</th>;
@@ -54,7 +57,7 @@ function New_start() {
   };
   const findCleanData = (data) => {
     let mp = new Map();
-    let test = "";
+
     for (let i = 0; i < data.length; i++) {
       // i = 0;
       let id = JSON.stringify(data[i].item_date);
@@ -146,12 +149,18 @@ function New_start() {
         // console.log(actualData);
         setCol(Object.keys(actualData[0]));
         let ans = findCleanData(actualData);
-        // console.log(ans);
-
-        // console.log(ans.keys());
+        console.log(ans);
+        // console.log("This is keys: ", ans.keys());
+        let itemDateList = [];
+        for (let key of ans.keys()) {
+          // console.log("this is a key", typeof key);
+          itemDateList.push(key);
+        }
+        // console.log(itemDateList);
+        setItemDateList(itemDateList);
         // console.log(ans.get('"2021-05-19"').get("2021-05-18"));
         setMp(ans);
-        console.log("this is a map", ans);
+        // console.log("this is a map", ans);
         //call function to create table.
       })
       .catch((err) => {
@@ -182,41 +191,67 @@ function New_start() {
         ThreeToSix: data_map.get(query).get(schd_id).time["3-6"],
         SixToNine: data_map.get(query).get(schd_id).time["6-9"],
       };
-      console.log("This is obj1", obj);
-      console.log("this is id ", schd_id);
+      // console.log("This is obj1", obj);
+      // console.log("this is id ", schd_id);
       schd_list.push(obj);
-      console.log("this is obj2 ", obj2);
+      // console.log("this is obj2 ", obj2);
       schd_time.push(obj2);
     }
     // console.log(schd_list);
 
     dispatch(fetchSchedulePair(schd_list));
     dispatch(fetchTimePair(schd_time));
-    navigate("/fetchPair", { replace: true });
+    // navigate("/fetchPair", { replace: true });
+    setTableVis(false);
   };
+
   return (
     <>
-      <Form
-        action=""
-        onSubmit={(e) => {
-          e.preventDefault();
-          navToOtherTable();
-        }}
-      >
-        <input
-          type="text"
-          name="query"
-          id="query"
-          onChange={(e) => setQuery(e.target.value)}
-        />
-        <Button>Submit</Button>
-      </Form>
-      <Table stripped bordered hover>
-        <thead>
-          <tr>{thData()}</tr>
-        </thead>
-        <tbody>{tdData()}</tbody>
-      </Table>
+      {tableVis === true ? (
+        <>
+          <Form
+            action=""
+            onSubmit={(e) => {
+              e.preventDefault();
+              navToOtherTable();
+            }}
+          >
+            <FormSelect onChange={(e) => setQuery(e.target.value)}>
+              <option
+                value="Select Item-Date"
+                selected
+              >{`"2021-05-19"`}</option>
+              {item_date_list.map((item) => (
+                <option value={item} key={item}>
+                  {item}
+                </option>
+              ))}
+            </FormSelect>
+            <Button
+              type="submit"
+              onClick={(e) => {
+                e.preventDefault();
+                navToOtherTable();
+              }}
+            >
+              Search Schedules
+            </Button>
+          </Form>
+          <Table stripped bordered hover>
+            <thead>
+              <tr>{thData()}</tr>
+            </thead>
+            <tbody>{tdData()}</tbody>
+          </Table>
+        </>
+      ) : (
+        <>
+          <Button onClick={() => setTableVis(true)}>
+            Want to Search Other Query
+          </Button>
+          <TableSchdDate />
+        </>
+      )}
     </>
   );
 }
